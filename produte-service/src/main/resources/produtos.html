@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Produtos</title>
+  <script>
+    const API_URL = "/produtos";
+
+    async function carregarProdutos() {
+      const response = await fetch(API_URL);
+      const produtos = await response.json();
+
+      const tabela = document.getElementById("tabela-produtos");
+      tabela.innerHTML = "";
+
+      produtos.forEach(p => {
+        let row = `<tr>
+          <td>${p.id}</td>
+          <td>${p.nome}</td>
+          <td>R$ ${p.preco.toFixed(2)}</td>
+          <td>${p.quantidade}</td>
+          <td>${p.descricao}</td>
+          <td><button onclick="deletarProduto(${p.id})">Excluir</button></td>
+        </tr>`;
+        tabela.innerHTML += row;
+      });
+    }
+
+    async function deletarProduto(id) {
+      if (confirm("Deseja realmente excluir este produto?")) {
+        await fetch(API_URL + "/" + id, { method: "DELETE" });
+        carregarProdutos();
+      }
+    }
+
+    async function pesquisarProduto() {
+      const id = document.getElementById("pesquisa-id").value;
+      if (!id) return;
+
+      const response = await fetch(API_URL + "/" + id);
+      if (response.status === 404) {
+        alert("Produto não encontrado");
+        return;
+      }
+      const p = await response.json();
+      alert(`Produto: ${p.nome}\nPreço: R$ ${p.preco}\nQuantidade: ${p.quantidade}\nDescrição: ${p.descricao}`);
+    }
+
+    window.onload = carregarProdutos;
+  </script>
+</head>
+<body>
+  <h1>Produtos</h1>
+
+  <h3>Pesquisar Produto</h3>
+  <input type="number" id="pesquisa-id" placeholder="Digite o ID">
+  <button onclick="pesquisarProduto()">Pesquisar</button>
+  <br><br>
+
+  <button onclick="carregarProdutos()">Recarregar Lista</button>
+
+  <h3>Produtos Cadastrados</h3>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Quantidade</th>
+        <th>Descrição</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-produtos"></tbody>
+  </table>
+</body>
+</html>

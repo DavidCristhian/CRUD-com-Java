@@ -13,8 +13,8 @@ public class ProdutoDAO {
         try {
             conn = DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/seubanco",
-                "seuusuario",
-                "suasenha"
+                "postgres",
+                "123"
             );
         } catch (Exception e) {
             e.printStackTrace();
