@@ -12,7 +12,7 @@ public class ProdutoDAO {
     public ProdutoDAO() {
         try {
             conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/seubanco",
+                "jdbc:postgresql://localhost:5432/produtoServices",
                 "postgres",
                 "123"
             );
