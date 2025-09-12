@@ -168,33 +168,33 @@
             <h1>Cadastrar Produto</h1>
         </div>
         <!-- Form -->
-        <form action="" id="form">
+        <form action="/produtos" id="form" method="post">
             <div class="input_container">
                 <div class="input-box">
                     <label for="name" class="form-label">Nome</label>
                     <div class="input-field">
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Nome do produto">
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Nome do produto" required>
                     </div>
                 </div>
                 
                 <div class="input-box">
                     <label for="preco" class="form-label">Preço</label>
                     <div class="input-field">
-                        <input type="number" name="preco" id="preco" class="form-control" placeholder="Preço do produto">
+                        <input type="number" name="preco" id="preco" class="form-control" placeholder="Preço do produto" required>
                     </div>
                 </div>
 
                 <div class="input-box">
                     <label for="quantidade" class="form-label">Quantidade</label>
                     <div class="input-field">
-                            <input type="text" name="quantidade" id="quantidade" class="form-control" placeholder="Digite a quantidade">
+                            <input type="text" name="quantidade" id="quantidade" class="form-control" placeholder="Digite a quantidade" required>
                     </div>
                 </div>
             </div>
             <div class="textarea-box">
                 <label for="descricao" class="form-label">Descrição</label>
                 <div class="input-field">
-                    <textarea name="descricao" id="descricao"></textarea>
+                    <textarea name="descricao" id="descricao" required></textarea>
                 </div>
             </div>
             <button type="submit" class="btn-submit">Cadastrar</button>
