@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário</title>
+	<script>
+	    async function cadastrarProduto(event) {
+	      event.preventDefault();
+
+	      const produto = {
+	        nome: document.getElementById("nome").value,
+	        preco: parseFloat(document.getElementById("preco").value),
+	        quantidade: parseInt(document.getElementById("quantidade").value),
+	        descricao: document.getElementById("descricao").value
+	      };
+
+	      const response = await fetch("/produtos", {
+	        method: "POST",
+	        headers: { "Content-Type": "application/json" },
+	        body: JSON.stringify(produto)
+	      });
+
+	      alert(await response.text());
+	    }
+	  </script>
 </head>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
@@ -168,7 +188,7 @@
             <h1>Cadastrar Produto</h1>
         </div>
         <!-- Form -->
-        <form action="/produtos" id="form" method="post">
+        <form onsubmit="cadastrarProduto(event)">
             <div class="input_container">
                 <div class="input-box">
                     <label for="name" class="form-label">Nome</label>
