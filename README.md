@@ -31,7 +31,7 @@ Este sistema implementa um CRUD (Create, Read, Update, Delete) para gerenciament
 ┃ ┗ 📂 service # (reservado para regras de negócio futuras)
 ┣ 📂 src/main/resources
 ┃ ┣ 📜 formulario.html # Página de formulário para produtos
-┃ ┗ 📜 produtos.html # Página para exibir listagem de produtos
+┃ ┗ 📜 dashboard.html # Página para exibir listagem de produtos
 ┣ 📂 src/test/java # (espaço para testes unitários)
 ┣ 📂 src/test/resources # (recursos de teste, se necessário)
 ┣ 📜 pom.xml # Configuração Maven
@@ -71,12 +71,12 @@ src/main/java/app/Aplicacao.java
 O servidor Spark será iniciado (por padrão na porta 4567).
 
 Acesse no navegador:
-http://localhost:4567/produtos
+http://localhost:4567/dashboard
 🔧 Rotas da API
 Método	Endpoint	Descrição
 GET	/produtos	Lista todos os produtos
 GET	/produtos/:id	Busca produto por ID
-POST	/produtos	Cria um novo produto
+POST	/formulario	Cria um novo produto
 PUT	/produtos/:id	Atualiza produto
 DELETE	/produtos/:id	Remove produto
 
