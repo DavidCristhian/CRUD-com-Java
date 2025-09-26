@@ -1,1 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Produtos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script>
+    const API_URL = "/produtos";
 
+    async function carregarProdutos() {
+      const response = await fetch(API_URL);
+      const produtos = await response.json();
+
+      const tabela = document.getElementById("tabela-produtos");
+      tabela.innerHTML = "";
+
+      produtos.forEach(p => {
+        let row = `<tr>
+          <td>${p.id}</td>
+          <td>${p.nome}</td>
+          <td>R$ ${p.preco.toFixed(2)}</td>
+          <td>${p.quantidade}</td>
+          <td>${p.descricao}</td>
+          <td><button onclick="deletarProduto(${p.id})">Excluir</button></td>
+		  <td><button onclick="editarProduto(${p.id})">Editar</button></td>
+        </tr>`;
+        tabela.innerHTML += row;
+      });
+    }
+	
+	 function editarProduto(id) {
+	   // redireciona para o formulário com parâmetro id
+	   window.location.href = "formulario.html?id=" + id;
+	 }
+
+
+    async function deletarProduto(id) {
+      if (confirm("Deseja realmente excluir este produto?")) {
+        await fetch(API_URL + "/" + id, { method: "DELETE" });
+        carregarProdutos();
+      }
+    }
+
+
+    async function pesquisarProduto() {
+      const id = document.getElementById("pesquisa-id").value;
+      if (!id) return;
+
+      const response = await fetch(API_URL + "/" + id);
+      if (response.status === 404) {
+        alert("Produto não encontrado");
+        return;
+      }
+      const p = await response.json();
+      alert(`Produto: ${p.nome}\nPreço: R$ ${p.preco}\nQuantidade: ${p.quantidade}\nDescrição: ${p.descricao}`);
+    }
+
+    window.onload = carregarProdutos;
+	
+	async function carregarEstatisticas() {
+	  try {
+	    const respTotal = await fetch("/produtos/total");
+	    if (!respTotal.ok) throw new Error("Erro em /produtos/total");
+	    const totalData = await respTotal.json();
+	    document.getElementById("total-produtos").innerText = totalData.total;
+
+	    const respValor = await fetch("/produtos/valor-estoque");
+	    if (!respValor.ok) throw new Error("Erro em /produtos/valor-estoque");
+	    const valorData = await respValor.json();
+	    document.getElementById("valor-estoque").innerText =
+	      valorData.valorEstoque.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+	  } catch (error) {
+	    console.error("Erro ao carregar estatísticas:", error);
+	    alert("Erro ao carregar estatísticas.");
+	  }
+	}
+
+
+	carregarEstatisticas();
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: sans-serif;
+    }
+
+    /* GRID PRINCIPAL */
+    body {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background-color: #f0f0f0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 70px;
+    }
+
+    .box-title-aside {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .box-title-aside span{
+        color: #008cc0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+    }
+
+    .sidebar li a {
+      position: relative;
+      display: flex;
+      gap: 1.3rem;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      color: black;
+      padding: 5px;
+    }
+
+    .sidebar li a::after{
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50%;
+        height: 3px;
+        transition: ease-in-out 300ms;
+    }
+
+    .sidebar li a::after:hover{
+        color: #008cc0;
+    }
+
+    .sidebar li a:hover{
+        color: #008cc0;
+        transition: ease-in-out 300ms;
+    }
+
+    /* CONTEÚDO PRINCIPAL */
+    .main-content {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      background-color: #e9e9e9;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .title-page h1 {
+      font-size: 1.5rem;
+    }
+
+    .box-search input {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .box-search button{
+      border: none;
+      border-radius: 10px;
+      background-color: #008cc0;
+      color: white;
+    }
+
+    .box-search button,
+    .box-reload-items button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .box-reload-items button{
+      border: none;
+      border-radius: 10px;
+      background-color: #d5e614;
+      color: white;
+    }
+
+    main {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* GRID DE CARDS */
+    .grid-boxs-data {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .created-item-box,
+    .total-value {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .content-box-data h2 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    /* TABELA */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background: #f4f4f4;
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 1024px) {
+      body {
+        grid-template-columns: 200px 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        grid-template-columns: 1fr; /* Sidebar vira topo */
+        grid-template-rows: auto 1fr;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .sidebar ul {
+        flex-direction: row;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .box-search,
+      .box-reload-items {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+      }
+
+      .box-search input {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="box-title-aside">
+      <h3>Gestor de <span>produtos</span></h3>
+    </div>
+    <div class="box-content-aside">
+        <ul>
+            <li><a href=""><i class="fa-solid fa-house"></i><p>Dashboard</p></a></li>
+        </ul>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header>
+      <div class="title-page">
+        <h1>Dashboard</h1>
+      </div>
+      <div class="box-search">
+        <input type="number" id="pesquisa-id" placeholder="Digite o ID">
+        <button onclick="pesquisarProduto()">Pesquisar</button>
+      </div>
+      <div class="box-reload-items">
+        <button onclick="carregarProdutos()">Recarregar Lista</button>
+      </div>
+    </header>
+
+    <main>
+	  <div class="grid-boxs-data">
+	    <div class="created-item-box">
+	      <i class="fa-solid fa-boxes-stacked"></i>
+	      <div class="content-box-data">
+	        <h2>Total de itens</h2>
+	        <p id="total-produtos"></p>
+	      </div>
+	    </div>
+	    <div class="total-value">
+	      <div class="content-box-data">
+	        <h2>Valor de estoque</h2>
+	        <p id="valor-estoque"></p>
+	      </div>
+	    </div>
+	  </div>
+
+
+      <h3>Produtos Cadastrados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Descrição</th>
+            <th>Ação1</th>
+			<th>Ação2</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-produtos"></tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
