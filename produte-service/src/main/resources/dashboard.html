@@ -193,7 +193,8 @@
     }
 
     .box-search button,
-    .box-reload-items button {
+    .box-reload-items button,
+	 .box-create-items button{
       padding: 6px 12px;
       cursor: pointer;
     }
@@ -204,6 +205,13 @@
       background-color: #d5e614;
       color: white;
     }
+	
+	.box-create-items button{
+		border: none;
+		border-radius: 10px;
+		background-color: greenyellow;
+		color: white;
+	}
 
     main {
       padding: 20px;
@@ -321,6 +329,9 @@
       <div class="box-reload-items">
         <button onclick="carregarProdutos()">Recarregar Lista</button>
       </div>
+	  <div class="box-create-items">
+		<button><a href="formulario.html">Criar</a></button>
+	  </div>
     </header>
 
     <main>
