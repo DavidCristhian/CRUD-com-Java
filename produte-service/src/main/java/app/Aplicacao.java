@@ -7,6 +7,10 @@ import com.google.gson.Gson;
 import dao.ProdutoDAO;
 import model.Produto;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+
 public class Aplicacao {
     public static void main(String[] args) {
         port(4567);
@@ -59,5 +63,39 @@ public class Aplicacao {
             boolean deletado = produtoDAO.deletar(id);
             return deletado ? "Produto deletado!" : "Erro ao deletar.";
         });
+        
+        // ======================================== //
+        // == Métodos para rotas / arquivos HTML ==
+        // ======================================== //
+        get("/formulario.html", (req, res) -> {
+            res.type("text/html");
+            return new String(Files.readAllBytes(Paths.get("src/main/resources/formulario.html")));
+        });
+
+        get("/dashboard.html", (req, res) -> {
+            res.type("text/html");
+            return new String(Files.readAllBytes(Paths.get("src/main/resources/dashboard.html")));
+        });
+        // ======================================== //
+        // == Métodos para rotas / arquivos HTML ==
+        // ======================================== //
+        
+        
+        // Total de produtos
+        get("/produtos/total", (req, res) -> {
+            res.type("application/json");
+            int total = produtoDAO.listar().size();
+            return "{\"total\": " + total + "}";
+        });
+
+        // Valor total em estoque
+        get("/produtos/valor-estoque", (req, res) -> {
+            res.type("application/json");
+            double valorEstoque = produtoDAO.listar().stream()
+                .mapToDouble(p -> p.getPreco() * p.getQuantidade())
+                .sum();
+            return "{\"valorEstoque\": " + valorEstoque + "}";
+        });
+
     }
 }
