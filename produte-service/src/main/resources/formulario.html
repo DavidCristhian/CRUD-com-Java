@@ -1,33 +1,70 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário</title>
-	<script>
-	    async function cadastrarProduto(event) {
-	      event.preventDefault();
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulário</title>
+  <script>
+    const API_URL = "/produtos";
+    let produtoId = null;
 
-	      const produto = {
-	        nome: document.getElementById("nome").value,
-	        preco: parseFloat(document.getElementById("preco").value),
-	        quantidade: parseInt(document.getElementById("quantidade").value),
-	        descricao: document.getElementById("descricao").value
-	      };
+    // Quando carregar a página
+    window.onload = async () => {
+      const params = new URLSearchParams(window.location.search);
+      produtoId = params.get("id");
 
-	      const response = await fetch("/produtos", {
-	        method: "POST",
-	        headers: { "Content-Type": "application/json" },
-	        body: JSON.stringify(produto)
-	      });
+      if (produtoId) {
+        // Estamos em modo edição → busca o produto e preenche o formulário
+        const response = await fetch(`${API_URL}/${produtoId}`);
+        if (response.ok) {
+          const produto = await response.json();
+          document.getElementById("nome").value = produto.nome;
+          document.getElementById("preco").value = produto.preco;
+          document.getElementById("quantidade").value = produto.quantidade;
+          document.getElementById("descricao").value = produto.descricao;
 
-	      alert(await response.text());
-	    }
-	  </script>
+          document.querySelector("h1").innerText = "Editar Produto";
+          document.querySelector(".btn-submit").innerText = "Salvar Alterações";
+        }
+      }
+    };
+
+    async function salvarProduto(event) {
+      event.preventDefault();
+
+      const produto = {
+        nome: document.getElementById("nome").value,
+        preco: parseFloat(document.getElementById("preco").value),
+        quantidade: parseInt(document.getElementById("quantidade").value),
+        descricao: document.getElementById("descricao").value
+      };
+
+      let response;
+      if (produtoId) {
+        // Atualizar (PUT)
+        response = await fetch(`${API_URL}/${produtoId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(produto)
+        });
+      } else {
+        // Criar novo (POST)
+        response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(produto)
+        });
+      }
+
+      alert(await response.text());
+      window.location.href = "dashboard.html"; // Volta para listagem
+    }
+  </script>
 </head>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+	/* Configurações padrões */
     :root{
         --primary-color: #2790b0;
         --color-100: #fff;
@@ -182,43 +219,45 @@
     }
 </style>
 <body>
-    <main class="form_container">
-        <!-- Header of form -->
-        <div class="form_header">
-            <h1>Cadastrar Produto</h1>
-        </div>
-        <!-- Form -->
-        <form onsubmit="cadastrarProduto(event)">
-            <div class="input_container">
-                <div class="input-box">
-                    <label for="name" class="form-label">Nome</label>
-                    <div class="input-field">
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Nome do produto" required>
-                    </div>
-                </div>
-                
-                <div class="input-box">
-                    <label for="preco" class="form-label">Preço</label>
-                    <div class="input-field">
-                        <input type="number" name="preco" id="preco" class="form-control" placeholder="Preço do produto" required>
-                    </div>
-                </div>
+  <main class="form_container">
+    <div class="form_header">
+      <h1>Cadastrar Produto</h1>
+    </div>
 
-                <div class="input-box">
-                    <label for="quantidade" class="form-label">Quantidade</label>
-                    <div class="input-field">
-                            <input type="text" name="quantidade" id="quantidade" class="form-control" placeholder="Digite a quantidade" required>
-                    </div>
-                </div>
-            </div>
-            <div class="textarea-box">
-                <label for="descricao" class="form-label">Descrição</label>
-                <div class="input-field">
-                    <textarea name="descricao" id="descricao" required></textarea>
-                </div>
-            </div>
-            <button type="submit" class="btn-submit">Cadastrar</button>
-        </form>
-    </main>
+    <!-- Corrigido: chama salvarProduto -->
+    <form onsubmit="salvarProduto(event)">
+      <div class="input_container">
+        <div class="input-box">
+          <label for="nome" class="form-label">Nome</label>
+          <div class="input-field">
+            <input type="text" id="nome" class="form-control" placeholder="Nome do produto" required>
+          </div>
+        </div>
+        
+        <div class="input-box">
+          <label for="preco" class="form-label">Preço</label>
+          <div class="input-field">
+            <input type="number" id="preco" class="form-control" placeholder="Preço do produto" required>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label for="quantidade" class="form-label">Quantidade</label>
+          <div class="input-field">
+            <input type="number" id="quantidade" class="form-control" placeholder="Digite a quantidade" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="textarea-box">
+        <label for="descricao" class="form-label">Descrição</label>
+        <div class="input-field">
+          <textarea id="descricao" required></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Cadastrar</button>
+    </form>
+  </main>
 </body>
 </html>
